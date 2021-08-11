@@ -7,9 +7,9 @@
  {
    Public $config;
 
-   function __construct()
+   function __construct($config)
    {
-     # code...
+     $this->config = $config;
    }
 
    function getDatabase()
