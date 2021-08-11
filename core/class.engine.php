@@ -12,49 +12,61 @@
      $this->config = $config;
    }
 
-   function getDatabase()
+   public function getDatabases()
+   {
+     $db = mysqli_connect($this->config['HOST'], $this->config['USER'], $this->config['PASS']);
+
+     if(!db) die("Database error");
+
+     $result = mysqli_query($db, "show DATABASES");
+
+     $databaseList = null;
+
+     while ($databases = mysqli_fetch_array($result)) {
+       $databaseList[] = $databases[0];
+     }
+
+     return $databaseList;
+   }
+
+   public function getTablesByDatabase()
    {
      # code...
    }
 
-   function getTablesByDatabase()
+   public function getPrimaryColumnByTable()
    {
      # code...
    }
 
-   function getPrimaryColumnByTable()
+   public function getColumnsByTable()
    {
      # code...
    }
 
-   function getColumnsByTable()
-   {
-     # code...
-   }
-
-   function generate()
+   public function generate()
    {
      # code...
    }
 
   //  ===================
 
-   function getBetween()
+   public function getBetween()
    {
      # code...
    }
 
-   function snakeToCamel()
+   public function snakeToCamel()
    {
      # code...
    }
 
-   function colToLabel()
+   public function colToLabel()
    {
      # code...
    }
 
-   function sanitize()
+   public function sanitize()
    {
      # code...
    }
