@@ -147,7 +147,190 @@
 
     public function generate($_FPOST)
     {
+      $_POST = $this->sanitize($_FPOST);
       
+      $crudTitle = $_POST['crudTitle'];
+      $controlerName = lcfirst(preg_replace("/[^A-Za-z0-9]/", "", $_POST['crudName']));
+      $uControlerName = ucfirst($controlerName);
+      $modelName = $controlerName.'Model';
+      $uModelName = ucfirst($modelName);
+      $crudName = $_POST['crudName'];
+      $table = $_POST['table'];
+      $primaryKey = $_POST['primaryKey'];
+      $column = $_POST['column'];
+      $label = $_POST['label'];
+      $name = $_POST['name'];
+      $iType = $_POST['iType'];
+      $maxlength = $_POST['maxlength'];
+      $required = $_POST['required'];
+      $dtShow = $_POST['dtShow'];
+      $response = array();
+      $htmlInputs = '                        <div class="row">'."\n";
+      $ciSelect = '';
+      $ciFields = '';
+      $ciValidation = '';
+      $ciDataTable = '';
+      $htmlDataTable = '';
+      $allowedFields = '';
+      $htmlEditFields = '';
+
+      // filter null input required fields
+      if (!isset($crudName) || $crudName == '' ||
+          !isset($crudTitle) || $crudTitle == '' ||
+          !isset($table) || $table == '' ||
+          !isset($primaryKey) || $primaryKey == '')
+      {
+        $response['success'] = FALSE;
+        $response['message'] = 'Please fill all required fields.';
+
+        die(json_encode($response));
+      }
+
+      // generate Input type
+      for ($i=0; $i < count($column); $i++) { 
+        $inputLabel = (isset($label[$i]) AND $label[$i] != '')? $label[i] : '';
+        $inputName = (isset($name[$i]) AND $name[$i] != '')? $name[i] : '';
+        $inputMaxlength = (isset($maxlength[$i]) AND $maxlength[$i] != '')? ' maxlength="'.$maxlength[$i].'"' : '';
+        $inputRequired = (isset($required[$i]) AND $required[$i] == 1)? 'required' : '';
+        $htmlInputRequired = (isset($required[$i]) AND $required[$i] == 1)? '<span class="text-danger">*</span> ' : '';
+        $crudShow = (isset($name[$i]) AND $name[$i] != '')? 1 : 0;
+        $ciValidationMaxLength = (isset($maxlength[$i]) AND $maxlength[$i] != '')? '|max_length['.$maxlength[$i].']' : '';
+        $ciValidationRequired = (isset($required[$i]) AND $required[$i] == 1)? 'required' : 'permit_empty';
+        $ciValidationType = '';
+
+        // find type field
+        if ($column[$i] == trim($primaryKey)) {
+          $htmlInputs .= ' 							<input type="hidden" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' '.$inputRequired.'>'."\n";
+          $ciValidationType = '|numeric';
+
+        } elseif ($iType[$i] == '1' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <input type="text" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' '.$inputRequired.'>
+                </div>
+              </div>'."\n";
+        } elseif ($iType[$i] == '2' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <input type="number" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' number="true" '.$inputRequired.'>
+                </div>
+              </div>'."\n";
+        } elseif ($iType[$i] == '3' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <input type="password" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' '.$inputRequired.'>
+                </div>
+              </div>'."\n";
+        } elseif ($iType[$i] == '4' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <input type="email" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' '.$inputRequired.'>
+                </div>
+              </div>'."\n";
+        } elseif ($iType[$i] == '5' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <textarea cols="40" rows="5" id="" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'" '.$inputMaxlength.' '.$inputRequired.'></textarea>
+                </div>
+              </div>'."\n";
+        } elseif ($iType[$i] == '6' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+              <div class="form-group">
+                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                <select id="'.$inputName.'" name="'.$inputName.'" class="custom-select" '.$inputRequired.'>
+                  <option value="select1">select1</option>
+                  <option value="select2">select2</option>
+                  <option value="select3">select3</option>
+                </select>
+              </div>
+            </div>'."\n";
+        }  elseif ($iType[$i] == '7' && $crudShow == '1') {
+          $htmlInputs .= '              <div class="col-md-4">
+                <div class="form-group">
+	                <label for="'.$inputName.'"> '.$inputLabel.': '.$htmlInputRequired.'</label>
+                  <input type="date" id="'.$inputName.'" name="'.$inputName.'" class="form-control" dateISO="true" '.$inputRequired.'>
+                </div>
+              </div>'."\n";
+        } else {
+          $htmlInputs .= '             <div class="row">'."\n";
+          $htmlInputs .= '              <input type="text" id="'.$inputName.'" name="'.$inputName.'" class="form-control" placeholder="'.$inputLabel.'"'.$inputMaxlength.' '.$inputRequired.'>'."\n";
+        }
+        
+        // add field to list fields
+        $ciFields .= '        $fields[\''.$column[$i].'\'] = $this->request->getPost(\''.$inputName.'\');'."\n";
+        
+        // list Validation field
+        if ($column[$i] != $primaryKey)
+          $ciValidation .= '            \''.$column[$i].'\' => [\'label\' => \''.$inputLabel.'\', \'rules\' => \''. $ciValidationRequired . $ciValidationType . $ciValidationMaxLength .'\'],'."\n";
+
+        // Data Table
+        if ($dtShow[$i] == '1') {
+          $ciDataTable .= '       $value->'.$column[$i].','."\n";
+          $htmlDataTable .= '         <th>'.$inputLabel.'</th>';
+          $ciSelect .= $column[$i].', ';
+        }
+
+        // add allowed Fields
+        if ($column[$i] != $primaryKey)
+          $allowedFields .= '\''.$column[$i].'\'';
+
+        if (($i % 3 == 0)) {
+          $htmlInputs .= '            </div>'."\n"; 
+          $htmlInputs .= '            <div class="row">'."\n";
+        }
+
+        if (!next($column))
+          $htmlInputs .= '            </div>'."\n";
+
+        if ($crudShow == '1')
+          $htmlEditFields .= '      $("#edit-form #'.$inputName.'").val(response.'.$column[$i].');'."\n";
+      }
+      
+      $ciSelect = substr($ciSelect, 0, -2);
+      $allowedFields - substr($allowedFields, 0, -2);
+
+      // get template contents
+      $model = file_get_contents(MVC_TPL .'/Model.tpl.php');
+      $controler = file_get_contents(MVC_TPL .'/Controler.tpl.php');
+      $view = file_get_contents(MVC_TPL .'/View.tpl.php');
+
+      $find = [
+        '@@@table@@@', '@@@primaryKey@@@', '@@@allowedFields@@@',
+        '@@@controlerName@@@', '@@@uControler@@@',
+        '@@@modelName@@@', '@@@uModelName@@@',
+        '@@@crudTitle@@@', '@@@htmlInputs@@@', '@@@ciFields@@@', '@@@ciValidation@@@',
+        '@@@ciDataTable@@@', '@@@htmlDataTable@@@', '@@@htmlEditFields@@@', '@@@ciSelect@@@'
+      ];
+      $replace =[
+        $table, $primaryKey, $allowedFields,
+        $controlerName, $uControlerName,
+        $modelName, $uModelName,
+        $crudTitle, $htmlInputs, $ciFields, $ciValidation,
+        $ciDataTable, $htmlDataTable, $htmlEditFields, $ciSelect
+      ];
+
+      // replace the @@@[name]@@@, $[name] to template
+      $model = str_replace($find, $replace, $model);
+      $controler = str_replace($find, $replace, $controler);
+      $view = str_replace($find, $replace, $view);
+
+      // Put the content to finish folder
+      file_put_contents(DOWNLOADS .'/Models/'.$uModelName.'.php', $model);
+      file_put_contents(DOWNLOADS .'/Controllers/'.$uControlerName.'.php', $controler);
+      file_put_contents(DOWNLOADS .'/Views/'.$controlerName.'.php', $view);
+
+      $response['success'] = true;
+      $response['message'] = 
+        '<a class="text-white" href="'.BASE_URL.'/download.php?t=c&f='.$uControlerName.'.php'.'" target="_blank">('.$uControlerName.'.php'.') Controller</a>'.
+        '<br /> <a class="text-white" href="'.BASE_URL.'/download.php?t=m&f='.$uModelName.'.php'.'" target="_blank">('.$uModelName.'.php'.') Model</a>'.
+        '<br /> <a class="text-white" href="'.BASE_URL.'/download.php?t=v&f='.$controlerName.'.php'.'" target="_blank">('.$controlerName.'.php'.') View</a>';
+
+      die(json_encode($response));
     }
 
     //  ===================
