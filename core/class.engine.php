@@ -5,70 +5,99 @@
 
  class Engine
  {
-   Public $config;
+    Public $db;
 
-   function __construct($config)
-   {
-     $this->config = $config;
-   }
+    function __construct($config)
+    {
+      // $this->config = $config;
+      $db = mysqli_connect($config['HOST'], $config['USER'], $config['PASS']);
+      if(!$db) die("Database error");
 
-   public function getDatabases()
-   {
-     $db = mysqli_connect($this->config['HOST'], $this->config['USER'], $this->config['PASS']);
+      $this->db = $db;
+    }
 
-     if(!db) die("Database error");
+    // private function for "Create Query"
+    Private function createQuery($query)
+    {
+      return mysqli_query($this->db, $query);
+    }
 
-     $result = mysqli_query($db, "show DATABASES");
+    // Get Databases
+    public function getDatabases()
+    {
+      $result = $this->createQuery("SHOW DATABASES");
 
-     $databaseList = null;
+      $databaseList = null;
 
-     while ($databases = mysqli_fetch_array($result)) {
-       $databaseList[] = $databases[0];
-     }
+      while ($databases = mysqli_fetch_array($result)) {
+        $databaseList[] = $databases[0];
+      }
 
-     return $databaseList;
-   }
+      return $databaseList;
+    }
 
-   public function getTablesByDatabase()
-   {
-     # code...
-   }
+    // Get Table by Database
+    public function getTablesByDatabase($_FPOST)
+    {
+      $_POST = $this->sanitize($_FPOST);
 
-   public function getPrimaryColumnByTable()
-   {
-     # code...
-   }
+      $result = $this->createQuery("SHOW TABLES FROM ".$_POST['database']);
 
-   public function getColumnsByTable()
-   {
-     # code...
-   }
+      $tableListHtml = '<option value="" selected="selected">-- Select --</option>';
 
-   public function generate()
-   {
-     # code...
-   }
+      while ($table = mysqli_fetch_array($result)) {
+        $tableListHtml .= '<option value="'. $table[0] .'">' . $table[0] . '</option>';
+      }
 
-  //  ===================
+      die($tablesListHtml);
+    }
 
-   public function getBetween()
-   {
-     # code...
-   }
+    public function getPrimaryColumnByTable($_FPOST)
+    {
+      $_POST = $this->sanitize($_FPOST); 
+      
+      $result = $this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\'');
 
-   public function snakeToCamel()
-   {
-     # code...
-   }
+      $primaryColumnsListHtml = '';
 
-   public function colToLabel()
-   {
-     # code...
-   }
+      while($column = mysqli_fetch_array($result))
+      {
+        $primaryColumnsListHtml .= '<option value="' .trim($column['Column_name']).'">' . trim($column['Column_name']).'</option>';
+      }
 
-   public function sanitize()
-   {
-     # code...
-   }
+      die ($primaryColumnsListHtml);
+    }
+
+    public function getColumnsByTable()
+    {
+      # code...
+    }
+
+    public function generate()
+    {
+      # code...
+    }
+
+    //  ===================
+
+    public function getBetween()
+    {
+      # code...
+    }
+
+    public function snakeToCamel()
+    {
+      # code...
+    }
+
+    public function colToLabel()
+    {
+      # code...
+    }
+
+    public function sanitize()
+    {
+      # code...
+    }
  }
  
