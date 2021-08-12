@@ -372,6 +372,7 @@
           continue;
         } else {
           $value = $input[$field];
+
           if (is_array($value)) {
             $value = $this->sanitize($value);
           }
@@ -387,7 +388,7 @@
 
             if (function_exists('iconv') && function_exists('mb_detect_encoding') && $utf8_encode) {
               $current_encoding = mb_detect_encoding($value);
-              
+
               if ($current_encoding != 'UTF-8' && $current_encoding != 'UTF-16') {
                 $value = iconv($current_encoding, 'UTF-8', $value);
               }
@@ -401,4 +402,3 @@
       return $return;
     }
  }
- 
