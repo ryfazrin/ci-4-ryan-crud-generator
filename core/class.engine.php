@@ -348,19 +348,57 @@
       return substr($string, $ini, $len);
     }
 
-    public function snakeToCamel()
+    public function snakeToCamel($str)
     {
-      # code...
+      return lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $str))));
     }
 
-    public function colToLabel()
+    public function colToLabel($str)
     {
-      # code...
+      return ucfirst(str_replace('_', ' ', $str));
     }
 
-    public function sanitize()
+    public function sanitize(array $input, array $fields = array(), $utf8_encode = true)
     {
-      # code...
+      $magic_quotes = (bool)get_magic_quotes_gpc();
+      if (empty($fields)) {
+        $fields = array_keys($input);
+      }
+
+      $return = array();
+
+      foreach ($fields as $field) {
+        if (!isset($input[$field])) {
+          continue;
+        } else {
+          $value = $input[$field];
+          if (is_array($value)) {
+            $value = $this->sanitize($value);
+          }
+
+          if (is_string($value)) {
+            if ($magic_quotes === true) {
+              $value = stripslashes($value);
+            }
+
+            if (strpos($value, "\r" !== false)) {
+              $value = trim($value);
+            }
+
+            if (function_exists('iconv') && function_exists('mb_detect_encoding') && $utf8_encode) {
+              $current_encoding = mb_detect_encoding($value);
+              
+              if ($current_encoding != 'UTF-8' && $current_encoding != 'UTF-16') {
+                $value = iconv($current_encoding, 'UTF-8', $value);
+              }
+            }
+            $value = filter_var($value, FILTER_SANITIZE_STRING);
+          }
+          $return[$field] = $value;
+        }
+      }
+
+      return $return;
     }
  }
  
