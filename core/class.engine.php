@@ -49,14 +49,16 @@
         $tableListHtml .= '<option value="'. $table[0] .'">' . $table[0] . '</option>';
       }
 
-      die($tablesListHtml);
+      die($tableListHtml);
     }
 
     // Get Primary Column
-    public function getPrimaryColumnByTable($_FPOST)
+    public function getPrimaryColumnsByTable($_FPOST)
     {
       $_POST = $this->sanitize($_FPOST); 
       
+      $this->db = mysqli_connect('localhost', 'root', '', $_POST['database']);
+
       $result = $this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\'');
 
       $primaryColumnsListHtml = '';
@@ -74,8 +76,16 @@
     {
       $_POST = $this->sanitize($_FPOST);
 
-      $result = $this->createQuery("DESC ".$_POST['table']);
-      $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
+      // $result = $this->createQuery("DESC ".$_POST['table']);
+      // $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
+
+    // harus ada data database
+    $this->db = mysqli_connect('localhost', 'root', '', $_POST['database']);
+		
+		$result = $this->createQuery("DESC ".$_POST['table']);
+    $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
+    // var_dump($this->db);
+		// $pkResult = mysqli_fetch_array(mysqli_query($db,'SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
 
       $columnsListHtml = '<ul class="list-group>';
 
@@ -188,8 +198,8 @@
 
       // generate Input type
       for ($i=0; $i < count($column); $i++) { 
-        $inputLabel = (isset($label[$i]) AND $label[$i] != '')? $label[i] : '';
-        $inputName = (isset($name[$i]) AND $name[$i] != '')? $name[i] : '';
+        $inputLabel = (isset($label[$i]) AND $label[$i] != '')? $label[$i] : '';
+        $inputName = (isset($name[$i]) AND $name[$i] != '')? $name[$i] : '';
         $inputMaxlength = (isset($maxlength[$i]) AND $maxlength[$i] != '')? ' maxlength="'.$maxlength[$i].'"' : '';
         $inputRequired = (isset($required[$i]) AND $required[$i] == 1)? 'required' : '';
         $htmlInputRequired = (isset($required[$i]) AND $required[$i] == 1)? '<span class="text-danger">*</span> ' : '';
@@ -277,7 +287,7 @@
 
         // add allowed Fields
         if ($column[$i] != $primaryKey)
-          $allowedFields .= '\''.$column[$i].'\'';
+          $allowedFields .= '\''.$column[$i].'\', ';
 
         if (($i % 3 == 0)) {
           $htmlInputs .= '            </div>'."\n"; 
@@ -292,7 +302,7 @@
       }
       
       $ciSelect = substr($ciSelect, 0, -2);
-      $allowedFields - substr($allowedFields, 0, -2);
+      $allowedFields = substr($allowedFields, 0, -2);
 
       // get template contents
       $model = file_get_contents(MVC_TPL .'/Model.tpl.php');
@@ -301,7 +311,7 @@
 
       $find = [
         '@@@table@@@', '@@@primaryKey@@@', '@@@allowedFields@@@',
-        '@@@controlerName@@@', '@@@uControler@@@',
+        '@@@controlerName@@@', '@@@uControlerName@@@',
         '@@@modelName@@@', '@@@uModelName@@@',
         '@@@crudTitle@@@', '@@@htmlInputs@@@', '@@@ciFields@@@', '@@@ciValidation@@@',
         '@@@ciDataTable@@@', '@@@htmlDataTable@@@', '@@@htmlEditFields@@@', '@@@ciSelect@@@'
@@ -377,9 +387,9 @@
           }
 
           if (is_string($value)) {
-            if (strpos($value, "\r" !== false)) {
-              $value = trim($value);
-            }
+            // if (strpos($value, "\r" !== false)) {
+            //   $value = trim($value);
+            // }
 
             if (function_exists('iconv') && function_exists('mb_detect_encoding') && $utf8_encode) {
               $current_encoding = mb_detect_encoding($value);
