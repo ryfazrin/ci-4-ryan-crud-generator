@@ -9,7 +9,7 @@
   <meta name="description" content="CI-4 Ryan Generator">
 
   <!-- icon -->
-  <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/img/favicon.png" />		
+  <link rel="icon" type="image/x-icon" href="<?= BASE_URL ?>/assets/img/favicon.ico" />		
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="<?= BASE_URL ?>/assets/dist/bootstrap/css/bootstrap.min.css">
