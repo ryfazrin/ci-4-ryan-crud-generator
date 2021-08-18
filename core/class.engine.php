@@ -5,27 +5,33 @@
 
  class Engine
  {
-    Public $db;
+    Public $config;
 
     function __construct($config)
     {
-      // $this->config = $config;
-      $db = mysqli_connect($config['HOST'], $config['USER'], $config['PASS']);
-      if(!$db) die("Database error");
-
-      $this->db = $db;
+      // array config
+      $this->config = $config;
     }
 
-    // private function for "Create Query"
-    Private function createQuery($query)
+    private function connection($config, $db = null)
     {
-      return mysqli_query($this->db, $query);
+      $db = mysqli_connect($config['HOST'], $config['USER'], $config['PASS'], $db);
+      if(!$db) die("Database error");
+
+      return $db;
+    }
+
+
+    // private function for "Create Query"
+    Private function createQuery($query, $config, $db = null)
+    {
+      return mysqli_query($this->connection($config, $db), $query);
     }
 
     // Get Databases
     public function getDatabases()
     {
-      $result = $this->createQuery("SHOW DATABASES");
+      $result = $this->createQuery("SHOW DATABASES", $this->config);
 
       $databaseList = null;
 
@@ -41,7 +47,7 @@
     {
       $_POST = $this->sanitize($_FPOST);
 
-      $result = $this->createQuery("SHOW TABLES FROM ".$_POST['database']);
+      $result = $this->createQuery("SHOW TABLES FROM ".$_POST['database'], $this->config);
 
       $tableListHtml = '<option value="" selected="selected">-- Select --</option>';
 
@@ -57,9 +63,7 @@
     {
       $_POST = $this->sanitize($_FPOST); 
       
-      $this->db = mysqli_connect('localhost', 'root', '', $_POST['database']);
-
-      $result = $this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\'');
+      $result = $this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\'', $this->config, $_POST['database']);
 
       $primaryColumnsListHtml = '';
 
@@ -76,16 +80,10 @@
     {
       $_POST = $this->sanitize($_FPOST);
 
-      // $result = $this->createQuery("DESC ".$_POST['table']);
-      // $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
-
     // harus ada data database
-    $this->db = mysqli_connect('localhost', 'root', '', $_POST['database']);
 		
-		$result = $this->createQuery("DESC ".$_POST['table']);
-    $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
-    // var_dump($this->db);
-		// $pkResult = mysqli_fetch_array(mysqli_query($db,'SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\''));
+		$result = $this->createQuery("DESC ".$_POST['table'], $this->config, $_POST['database']);
+    $pkResult = mysqli_fetch_array($this->createQuery('SHOW KEYS FROM '.$_POST['table'].' WHERE Key_name = \'PRIMARY\'', $this->config, $_POST['database']));
 
       $columnsListHtml = '<ul class="list-group>';
 
