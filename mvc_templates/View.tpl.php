@@ -144,7 +144,7 @@
         $.ajax({
           url: '<?php echo base_url($controller.'/add') ?>',						
           type: 'post',
-          data: form.serialize(), // /converting the form data into array and sending it to server
+          data: form.serialize(), // converting the form data into array and sending it to server
           dataType: 'json',
           beforeSend: function() {
             $('#add-form-btn').html('<i class="fa fa-spinner fa-spin"></i>');

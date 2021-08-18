@@ -42,8 +42,8 @@ class @@@uControlerName@@@ extends BaseController
 		foreach ($result as $key => $value) {
 							
 			$ops = '<div class="btn-group">';
-			$ops .= '	<button type="button" class="btn btn-outline-warning" onclick="edit('. $value->@@@primaryKey@@@ .')"><i class="fas fa-pencil-alt text-black"></i></button>';
-			$ops .= '	<button type="button" class="btn btn-outline-danger" onclick="remove('. $value->@@@primaryKey@@@ .')"><i class="fas fa-trash-alt text-black"></i></button>';
+			$ops .= '	<button type="button" class="btn btn-sm btn-outline-warning" onclick="edit('. $value->@@@primaryKey@@@ .')"><i class="fas fa-pencil-alt text-black"></i></button>';
+			$ops .= '	<button type="button" class="btn btn-sm btn-outline-danger" onclick="remove('. $value->@@@primaryKey@@@ .')"><i class="fas fa-trash-alt text-black"></i></button>';
 			$ops .= '</div>';
 			
 			$data['data'][$key] = array(
