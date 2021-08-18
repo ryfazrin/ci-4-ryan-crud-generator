@@ -1,0 +1,44 @@
+<?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+/*
+|--------------------------------------------------------------------------
+| Define dirs
+|--------------------------------------------------------------------------
+|
+*/
+define('ABSPATH', 	dirname( __FILE__ ) . '/');
+define('CORE',  	ABSPATH . 'core');
+define('VIEWS',    	ABSPATH . 'views');
+define('MVC_TPL',   ABSPATH . 'mvc_templates');
+define('DOWNLOADS', ABSPATH . 'downloads');
+define('ASSETS',   	'../assets');
+define('BASE_URL',  (isset($_SERVER['HTTPS']) ? 'http' : 'http') . '://'.$_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']));
+
+/*
+|--------------------------------------------------------------------------
+| Database configurations
+|--------------------------------------------------------------------------
+|
+*/
+
+$config['HOST'] = 'localhost';
+$config['USER'] = 'root';
+$config['PASS'] = '';
+
+/*
+|--------------------------------------------------------------------------
+| Include files required for initialization.
+|--------------------------------------------------------------------------
+|
+*/
+include_once CORE . '/viewloader.class.php';
+include_once CORE . '/class.engine.php';
+
+// Load core files
+$engine = new Engine($config);
+$viewLoader = new ViewLoader(VIEWS .'/');
+
+?>
