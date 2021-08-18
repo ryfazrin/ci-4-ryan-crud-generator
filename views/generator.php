@@ -87,11 +87,11 @@
 
 <?php include_once 'templates/footer.php'; ?>
 
-	<script src="<?= BASE_URL ?>/assets/dist/jquery/jquery-3.3.1.min.js"></script>
-	<script src="<?= BASE_URL ?>/assets/dist/jquery/jquery-ui.min.js"></script>	
-	<script src="<?= BASE_URL ?>/assets/dist/popper/popper.min.js"></script>
-	<script src="<?= BASE_URL ?>/assets/dist/bootstrap/js/bootstrap.min.js"></script>
-	<script src="<?= BASE_URL ?>/assets/dist/jquery-validation/jquery.validate.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/dist/jquery/jquery-3.3.1.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/dist/jquery/jquery-ui.min.js"></script>	
+<script src="<?= BASE_URL ?>/assets/dist/popper/popper.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/dist/bootstrap/js/bootstrap.min.js"></script>
+<script src="<?= BASE_URL ?>/assets/dist/jquery-validation/jquery.validate.min.js"></script>
 
 <script>
 $(document)
