@@ -33,7 +33,7 @@
     <div id="wrapper">
 
         <!-- Sidebar -->
-            <?= $this->include('Admin\Templates\sideMenu') ?>
+            <?= $this->include('Templates\sideMenu') ?>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -43,7 +43,7 @@
             <div id="content">
 
                 <!-- Topbar -->
-                    <?= $this->include('Admin\Templates\header') ?>
+                    <?= $this->include('Templates\header') ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
