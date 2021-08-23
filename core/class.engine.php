@@ -47,7 +47,7 @@
     {
       $_POST = $this->sanitize($_FPOST);
 
-      $result = $this->createQuery("SHOW TABLES FROM ".$_POST['database'], $this->config);
+      $result = $this->createQuery("SHOW TABLES FROM `".$_POST['database']."`", $this->config);
 
       $tableListHtml = '<option value="" selected="selected">-- Select --</option>';
 
